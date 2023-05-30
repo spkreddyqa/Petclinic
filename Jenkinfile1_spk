@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    tools {
+        jdk 'jdk11'
+        maven 'maven3'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/spkreddyqa/Petclinic.git'
+            }
+        }
+        stage('Sonar Analysis') {
+            steps {
+                sh "mvn clean package"
+                sh ''' mvn sonar:sonar -D.url=http://http://35.154.77.244:9000/ -Dsonar.login=squ_dbdaac9f7df7b9ccf2b3d4a5d7df073bfe0b7ba7 -Dsonar.projectName=Petclinic \
+                -Dsonar.java.binaries=. \
+                -Dsonar.projectKey=Petclinic '''
+            }
+        }
+    }
+}
